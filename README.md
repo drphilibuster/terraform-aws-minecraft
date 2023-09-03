@@ -79,4 +79,3 @@ module "minecraft" {
 
 ## License
 MIT Licensed. See LICENSE for full details.
-
