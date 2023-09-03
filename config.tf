@@ -1,3 +1,4 @@
+# provider and version
 terraform {
   required_version = ">= 1.3.6"
 
@@ -9,7 +10,7 @@ terraform {
   }
 }
 
-// Default network
+# Default network
 
 data "aws_vpc" "default" {
   default = true
@@ -24,7 +25,7 @@ data "aws_subnets" "default" {
 
 data "aws_caller_identity" "aws" {}
 
-// Amazon Linux2 AMI - can switch this to default by editing the EC2 resource below
+# Amazon Linux2 AMI - can switch this to default by editing the EC2 resource below
 data "aws_ami" "amazon-linux-2" {
   most_recent = true
 
@@ -35,7 +36,7 @@ data "aws_ami" "amazon-linux-2" {
   }
 }
 
-// Find latest Ubuntu AMI, use as default if no AMI specified
+# Find latest Ubuntu AMI, use as default if no AMI specified
 data "aws_ami" "ubuntu" {
   most_recent = true
 
@@ -52,7 +53,7 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-// Script to configure the server - this is where most of the magic occurs!
+# Script to configure the server - this is where most of the magic occurs!
 data "template_file" "user_data" {
   template = file("${path.module}/user_data.sh")
 
@@ -68,15 +69,19 @@ data "template_file" "user_data" {
 }
 
 locals {
+  # networking
   vpc_id    = length(var.vpc_id) > 0 ? var.vpc_id : data.aws_vpc.default.id
   subnet_id = length(var.subnet_id) > 0 ? var.subnet_id : sort(data.aws_subnets.default.ids)[0]
+  # tags
   tf_tags = {
     Terraform = true,
     By        = data.aws_caller_identity.aws.arn
   }
+  # S3 bucket
   using_existing_bucket = signum(length(var.bucket_name)) == 1
   bucket                = length(var.bucket_name) > 0 ? var.bucket_name : "${module.label.id}-${random_string.s3.result}"
   _ssh_key_name         = length(var.key_name) > 0 ? var.key_name : aws_key_pair.ec2_ssh[0].key_name
+  # local to dynamically create ingress rules for the security group based on the list in allowed_cidrs
   dynamic_ingress_rules = [
     for cidr in var.allowed_cidrs : {
       from_port   = var.mc_port
