@@ -55,7 +55,7 @@ variable "environment" {
 
 variable "tags" {
   description = "Any extra tags to assign to objects"
-  type        = map
+  type        = map(any)
   default     = {}
 }
 
@@ -125,7 +125,7 @@ variable "instance_type" {
 
 variable "allowed_cidrs" {
   description = "Allow these CIDR blocks to the server - default is the Universe"
-  type        = string
-  default     = "0.0.0.0/0"
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
 }
 

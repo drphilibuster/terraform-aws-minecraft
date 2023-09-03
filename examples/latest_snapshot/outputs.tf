@@ -19,19 +19,19 @@ output "id" {
 }
 
 output "public_key_openssh" {
-  value = module.minecraft.public_key_openssh 
+  value = module.minecraft.public_key_openssh
 }
 
 output "public_key" {
-  value = module.minecraft.public_key 
+  value = module.minecraft.public_key
 }
 
 output "private_key" {
-  value = module.minecraft.private_key 
+  value = module.minecraft.private_key
 }
 
 output "zzz_ec2_ssh" {
-  value = module.minecraft.zzz_ec2_ssh 
+  value = module.minecraft.zzz_ec2_ssh
 }
 
 #resource "local_file" "private_key" {
